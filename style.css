@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SHREE MAGADH ALANKAR - LUXURY 3D SCROLL STAGE & ERP STYLES (style.css)
+   SHREE MAGADH ALANKAR - LUXURY 3D SCROLL STAGE & 360° STUDIO STYLES (style.css)
    ========================================================================== */
 
 body {
@@ -22,7 +22,7 @@ body {
   background: radial-gradient(circle at 50% 45%, rgba(66, 45, 11, 0.28) 0%, rgba(9, 8, 13, 0.96) 72%);
 }
 
-/* Smooth glassmorphic cards */
+/* Smooth glassmorphic filter pills */
 .cat-pill.active {
   background: linear-gradient(135deg, #f59e0b, #eab308);
   color: #000;
@@ -33,6 +33,20 @@ body {
   background: linear-gradient(135deg, #f59e0b, #ca8a04);
   color: #000;
   box-shadow: 0 8px 20px -4px rgba(245, 158, 11, 0.45);
+}
+
+/* Product Card HD Image Hover & 360 Badge */
+.catalog-card-img {
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.group:hover .catalog-card-img {
+  transform: scale(1.07);
+}
+
+/* Thumbnail active ring inside 360 modal */
+.thumb-360-active {
+  border-color: #f59e0b !important;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.45);
 }
 
 /* Custom Scrollbar */
