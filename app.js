@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * SHREE MAGADH ALANKAR MANDIR - 3D SCROLL ENGINE, 360° PRODUCT STUDIO & ERP
+ * SHREE MAGADH ALANKAR MANDIR - PROFESSIONAL UI, 3D SCROLL & ERP (app.js)
  * Pre-configured with your deployed Google Apps Script Web App URL
  * ============================================================================
  */
@@ -170,6 +170,7 @@ function getItemGallery(item) {
 
 /* ==========================================================================
    2. THREE.JS CENTER-STAGE METALLIC 3D SCROLL DISASSEMBLY & MORPH ENGINE
+   (Calibrated for High-Contrast Daylight Ivory Studio)
    ========================================================================== */
 function init3DScrollJewelry() {
   const canvas = document.getElementById('jewelry-3d-canvas');
@@ -186,26 +187,31 @@ function init3DScrollJewelry() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.25;
+  renderer.toneMappingExposure = 1.1;
 
+  // High-Contrast Metallic Materials for Ivory Showroom Backdrop
   const goldMaterial = new THREE.MeshStandardMaterial({
-    color: new THREE.Color('#ffd166'),
-    metalness: 0.94,
-    roughness: 0.16
+    color: new THREE.Color('#C5921E'),
+    emissive: new THREE.Color('#3B2600'),
+    emissiveIntensity: 0.18,
+    metalness: 0.88,
+    roughness: 0.22
   });
 
   const silverMaterial = new THREE.MeshStandardMaterial({
-    color: new THREE.Color('#e2eafc'),
-    metalness: 0.97,
-    roughness: 0.11
+    color: new THREE.Color('#8C96A6'),
+    emissive: new THREE.Color('#1E242B'),
+    emissiveIntensity: 0.15,
+    metalness: 0.92,
+    roughness: 0.18
   });
 
   const coreGemMaterial = new THREE.MeshStandardMaterial({
-    color: new THREE.Color('#ff4d6d'),
-    emissive: new THREE.Color('#590d22'),
-    emissiveIntensity: 0.5,
-    metalness: 0.65,
-    roughness: 0.08,
+    color: new THREE.Color('#8A1538'),
+    emissive: new THREE.Color('#4A081C'),
+    emissiveIntensity: 0.45,
+    metalness: 0.55,
+    roughness: 0.12,
     flatShading: true
   });
 
@@ -271,18 +277,19 @@ function init3DScrollJewelry() {
     lotusPetals.push(petal);
   }
 
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.55);
+  // Showroom Studio Lighting Rig
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1.15);
   scene.add(ambientLight);
 
-  const keyLight = new THREE.PointLight(0xffb703, 4.2, 25);
+  const keyLight = new THREE.PointLight(0xffb703, 4.5, 28);
   keyLight.position.set(4, 4, 5);
   scene.add(keyLight);
 
-  const rimLight = new THREE.PointLight(0x90e0ef, 3.5, 25);
+  const rimLight = new THREE.PointLight(0xffffff, 3.8, 28);
   rimLight.position.set(-4, -3, 4);
   scene.add(rimLight);
 
-  const backLight = new THREE.DirectionalLight(0xffd166, 2.0);
+  const backLight = new THREE.DirectionalLight(0xd4af37, 2.5);
   backLight.position.set(0, 5, -5);
   scene.add(backLight);
 
@@ -380,18 +387,18 @@ function init3DScrollJewelry() {
       petal.rotation.x = morphFactor * Math.PI;
     });
 
-    const goldColor = new THREE.Color('#ffb703');
-    const silverCyan = new THREE.Color('#48cae4');
-    const royalRose = new THREE.Color('#ff758f');
+    const goldColor = new THREE.Color('#d97706');
+    const silverPlatinum = new THREE.Color('#64748b');
+    const royalBurgundy = new THREE.Color('#9f1239');
 
     if (p < 0.5) {
-      keyLight.color.lerpColors(goldColor, silverCyan, p * 2);
+      keyLight.color.lerpColors(goldColor, silverPlatinum, p * 2);
     } else {
-      keyLight.color.lerpColors(silverCyan, royalRose, (p - 0.5) * 2);
+      keyLight.color.lerpColors(silverPlatinum, royalBurgundy, (p - 0.5) * 2);
     }
     keyLight.position.x = Math.cos(p * Math.PI * 2) * 5;
     keyLight.position.z = Math.sin(p * Math.PI * 2) * 5 + 2;
-    keyLight.intensity = 3.8 + explosionFactor * 2.2;
+    keyLight.intensity = 4.0 + explosionFactor * 2.0;
 
     renderer.render(scene, camera);
   }
@@ -415,16 +422,16 @@ function initProduct360Viewer() {
   renderer.setSize(canvas.clientWidth || 500, canvas.clientHeight || 340);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.3;
+  renderer.toneMappingExposure = 1.15;
 
-  const ambient = new THREE.AmbientLight(0xffffff, 0.7);
+  const ambient = new THREE.AmbientLight(0xffffff, 1.2);
   scene.add(ambient);
 
   const keyLight = new THREE.PointLight(0xffd166, 4.5, 25);
   keyLight.position.set(4, 4, 5);
   scene.add(keyLight);
 
-  const fillLight = new THREE.PointLight(0x90e0ef, 3.2, 25);
+  const fillLight = new THREE.PointLight(0xffffff, 3.2, 25);
   fillLight.position.set(-4, -2, 4);
   scene.add(fillLight);
 
@@ -437,7 +444,6 @@ function initProduct360Viewer() {
   viewer360.meshGroup = meshGroup;
   viewer360.initialized = true;
 
-  // Interactive Drag-to-Rotate 360°
   canvas.addEventListener('pointerdown', (e) => {
     viewer360.isDragging = true;
     viewer360.autoSpin = false;
@@ -456,7 +462,6 @@ function initProduct360Viewer() {
     viewer360.angleRad += dx * 0.012;
     viewer360.tiltRad = Math.max(-0.8, Math.min(0.8, viewer360.tiltRad + dy * 0.008));
 
-    // Sync slider degree display
     let deg = Math.round(((viewer360.angleRad * 180) / Math.PI) % 360);
     if (deg < 0) deg += 360;
     const slider = document.getElementById('slider-360-angle');
@@ -491,33 +496,30 @@ function initProduct360Viewer() {
   animate360();
 }
 
-/**
- * Builds a category-authentic 3D Jewelry Model inside the 360° Turntable
- */
 function buildCategory3DModel(item) {
   if (!viewer360.meshGroup) return;
 
-  // Clear previous model
   while (viewer360.meshGroup.children.length > 0) {
     viewer360.meshGroup.remove(viewer360.meshGroup.children[0]);
   }
 
   const isSilver = item.MetalType === 'Silver';
   const primaryMat = new THREE.MeshStandardMaterial({
-    color: new THREE.Color(isSilver ? '#e2eafc' : '#ffd166'),
-    metalness: 0.96,
-    roughness: 0.12
+    color: new THREE.Color(isSilver ? '#8C96A6' : '#C5921E'),
+    emissive: new THREE.Color(isSilver ? '#1E242B' : '#3B2600'),
+    emissiveIntensity: 0.18,
+    metalness: 0.9,
+    roughness: 0.16
   });
   const accentMat = new THREE.MeshStandardMaterial({
-    color: new THREE.Color(isSilver ? '#ffd166' : '#ff4d6d'),
-    metalness: 0.85,
+    color: new THREE.Color(isSilver ? '#C5921E' : '#8A1538'),
+    metalness: 0.82,
     roughness: 0.18
   });
 
   const cat = item.Category;
 
   if (cat === 'Payal') {
-    // Curved Chandi Payal Anklet + 24 Hanging Ghungroo Bells
     const mainChain = new THREE.Mesh(new THREE.TorusGeometry(1.55, 0.09, 28, 100), primaryMat);
     const innerFiligree = new THREE.Mesh(new THREE.TorusGeometry(1.42, 0.04, 20, 90), primaryMat);
     viewer360.meshGroup.add(mainChain, innerFiligree);
@@ -530,7 +532,6 @@ function buildCategory3DModel(item) {
       viewer360.meshGroup.add(bell);
     }
   } else if (cat === 'Earring') {
-    // Traditional Suryamukhi Jhumka Dome + Hanging Golden Drops
     const studTop = new THREE.Mesh(new THREE.SphereGeometry(0.32, 24, 24), primaryMat);
     studTop.position.y = 1.35;
     const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.7, 16), primaryMat);
@@ -549,7 +550,6 @@ function buildCategory3DModel(item) {
       viewer360.meshGroup.add(drop);
     }
   } else if (cat === 'City Gold') {
-    // Multi-Layer Patna Bridal Rani Haar Necklace + Pendant
     const outerHaar = new THREE.Mesh(new THREE.TorusGeometry(1.65, 0.08, 24, 100), primaryMat);
     const innerHaar = new THREE.Mesh(new THREE.TorusGeometry(1.30, 0.06, 24, 90), primaryMat);
     const pendant = new THREE.Mesh(new THREE.OctahedronGeometry(0.42, 1), accentMat);
@@ -563,7 +563,6 @@ function buildCategory3DModel(item) {
       viewer360.meshGroup.add(bead);
     }
   } else if (cat === 'Kids Bala') {
-    // Pair of Smooth Kids Chandi Bala Bangles with Nazariya Beads
     const leftBala = new THREE.Mesh(new THREE.TorusGeometry(1.1, 0.13, 28, 90), primaryMat);
     leftBala.position.x = -0.65;
     leftBala.rotation.y = 0.35;
@@ -574,7 +573,6 @@ function buildCategory3DModel(item) {
 
     viewer360.meshGroup.add(leftBala, rightBala);
   } else {
-    // Silver Coin / Bichhiya Floral Ornament
     const coinDisc = new THREE.Mesh(new THREE.CylinderGeometry(1.45, 1.45, 0.16, 48), primaryMat);
     coinDisc.rotation.x = Math.PI / 2;
     const rimTorus = new THREE.Mesh(new THREE.TorusGeometry(1.45, 0.09, 24, 90), primaryMat);
@@ -592,14 +590,12 @@ function open360Modal(sku) {
   modal.classList.remove('hidden');
   modal.classList.add('flex');
 
-  // Populate details
   document.getElementById('modal-360-badge').textContent = `${item.Category} · ${item.MetalType}`;
   document.getElementById('modal-360-title').textContent = item.ItemName;
   document.getElementById('modal-360-sku').textContent = `SKU: ${item.SKU}`;
   document.getElementById('modal-360-price').textContent = `₹${Number(item.SellPriceINR).toLocaleString('en-IN')}`;
   document.getElementById('modal-360-weight').textContent = `${item.WeightGrams}g`;
 
-  // Populate HD Gallery & Thumbnails
   const gallery = getItemGallery(item);
   const mainImg = document.getElementById('modal-360-main-img');
   mainImg.src = gallery[0];
@@ -608,13 +604,12 @@ function open360Modal(sku) {
   const angleLabels = ['Front Karigari', 'Side Filigree', 'Clasp & Polish'];
   thumbsContainer.innerHTML = gallery.map((imgUrl, idx) => `
     <button onclick="select360PhotoAngle('${imgUrl}', this)"
-            class="thumb-btn ${idx === 0 ? 'thumb-360-active' : ''} flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-black/80 border border-white/15 hover:border-amber-400 transition">
+            class="thumb-btn ${idx === 0 ? 'thumb-360-active' : ''} flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-white border border-stone-300 hover:border-[#6B1D2F] transition shadow-sm">
       <img src="${imgUrl}" class="w-10 h-10 rounded-lg object-cover" />
-      <span class="text-[11px] text-amber-100 font-medium pr-1">${angleLabels[idx] || 'Angle ' + (idx + 1)}</span>
+      <span class="text-[11px] text-stone-800 font-semibold pr-1">${angleLabels[idx] || 'Angle ' + (idx + 1)}</span>
     </button>
   `).join('');
 
-  // Book Order Button inside Modal
   const bookBtn = document.getElementById('btn-modal-book-order');
   bookBtn.onclick = () => {
     close360Modal();
@@ -622,7 +617,6 @@ function open360Modal(sku) {
     document.getElementById('custom-order-section').scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Initialize & Resize 360° 3D Turntable
   setTimeout(() => {
     initProduct360Viewer();
     const canvas = document.getElementById('product-360-canvas');
@@ -656,13 +650,13 @@ function switch360Mode(mode) {
   if (mode === '3d') {
     stage3d.classList.remove('hidden');
     stagePhoto.classList.add('hidden');
-    btn3d.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500 text-black transition';
-    btnPhoto.className = 'px-3 py-1.5 rounded-lg text-xs font-bold text-amber-200 hover:bg-white/10 transition';
+    btn3d.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-[#6B1D2F] text-white transition';
+    btnPhoto.className = 'px-3 py-1.5 rounded-lg text-xs font-bold text-stone-700 hover:bg-stone-100 transition';
   } else {
     stage3d.classList.add('hidden');
     stagePhoto.classList.remove('hidden');
-    btnPhoto.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500 text-black transition';
-    btn3d.className = 'px-3 py-1.5 rounded-lg text-xs font-bold text-amber-200 hover:bg-white/10 transition';
+    btnPhoto.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-[#6B1D2F] text-white transition';
+    btn3d.className = 'px-3 py-1.5 rounded-lg text-xs font-bold text-stone-700 hover:bg-stone-100 transition';
   }
 }
 
@@ -698,7 +692,6 @@ function handle360SliderInput(degVal) {
   viewer360.angleRad = (deg * Math.PI) / 180;
   document.getElementById('label-360-degree').textContent = `${deg}°`;
 
-  // Also rotate HD photo perspective slightly if in photo mode
   const img = document.getElementById('modal-360-main-img');
   if (img) {
     const tiltY = Math.sin(viewer360.angleRad) * 14;
@@ -716,10 +709,10 @@ function updateAutoSpinButtonUI() {
   if (!btn) return;
   if (viewer360.autoSpin) {
     btn.textContent = '⟳ Auto-Spin: ON';
-    btn.className = 'px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+    btn.className = 'px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-300';
   } else {
     btn.textContent = '⟳ Auto-Spin: PAUSED';
-    btn.className = 'px-3 py-1.5 rounded-xl text-xs font-semibold bg-white/10 text-slate-300 border border-white/20';
+    btn.className = 'px-3 py-1.5 rounded-xl text-xs font-semibold bg-stone-100 text-stone-700 border border-stone-300';
   }
 }
 
@@ -798,8 +791,8 @@ function updateSyncBadge(text, isCloud) {
   if (!badge) return;
   badge.textContent = text;
   badge.className = isCloud
-    ? 'text-[11px] px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-    : 'text-[11px] px-2.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/30';
+    ? 'text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-200 border border-emerald-400/40 font-medium'
+    : 'text-[11px] px-2.5 py-0.5 rounded-full bg-white/10 text-amber-200 border border-white/20 font-medium';
 }
 
 function updateTickerUI() {
@@ -811,387 +804,4 @@ function updateTickerUI() {
   if (gInput) gInput.value = state.rates.gold22kPerGram;
 }
 
-/* ==========================================================================
-   5. PUBLIC SHOWCASE CATALOG (WITH HD IMAGES & 360° VIEW LAUNCHER)
-   ========================================================================== */
-function filterCatalog(category) {
-  state.activeCategoryFilter = category;
-  document.querySelectorAll('.cat-pill').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.cat === category);
-  });
-  renderPublicCatalog();
-}
-
-function renderPublicCatalog() {
-  const grid = document.getElementById('public-catalog-grid');
-  if (!grid) return;
-
-  const filtered = state.inventory.filter(item => {
-    const isPub = String(item.PublicShowcase || 'YES').toUpperCase() === 'YES';
-    const matchesCat = state.activeCategoryFilter === 'ALL' || item.Category === state.activeCategoryFilter;
-    return isPub && matchesCat;
-  });
-
-  grid.innerHTML = filtered.map(item => {
-    const isSilver = item.MetalType === 'Silver';
-    const badgeColor = isSilver
-      ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'
-      : 'bg-amber-500/20 text-amber-300 border-amber-500/30';
-
-    const gallery = getItemGallery(item);
-    const primaryImg = gallery[0];
-
-    return `
-      <div class="group rounded-3xl bg-white/5 border border-amber-500/20 overflow-hidden hover:border-amber-400/70 transition flex flex-col justify-between shadow-2xl">
-        <div>
-          <!-- HD Image Container with 360° Interactive Trigger -->
-          <div onclick="open360Modal('${item.SKU}')" class="relative h-56 w-full overflow-hidden bg-black cursor-pointer">
-            <img src="${primaryImg}" alt="${item.ItemName}" loading="lazy" class="catalog-card-img w-full h-full object-cover opacity-90 group-hover:opacity-100" />
-            <div class="absolute inset-0 bg-gradient-to-t from-[#09080d] via-transparent to-black/40"></div>
-
-            <!-- Top Overlay Badges -->
-            <div class="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
-              <span class="px-3 py-1 rounded-full text-[11px] font-semibold backdrop-blur-md border ${badgeColor}">
-                ${item.Category} · ${item.MetalType}
-              </span>
-              <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-black/75 text-amber-300 border border-amber-400/50 backdrop-blur-md flex items-center gap-1 shadow-lg">
-                🔄 360° HD View
-              </span>
-            </div>
-
-            <!-- Bottom Overlay Weight & Multi-Angle Indicator -->
-            <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-              <span class="text-xs font-semibold text-white bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10">
-                ⚖️ ${item.WeightGrams} Grams
-              </span>
-              <span class="text-[11px] text-amber-300 font-medium bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-lg border border-amber-500/30 group-hover:bg-amber-500 group-hover:text-black transition">
-                Click to Spin 360° →
-              </span>
-            </div>
-          </div>
-
-          <!-- Item Title & SKU -->
-          <div class="p-5 pb-2">
-            <div class="flex items-center justify-between text-[11px] font-mono text-slate-400 mb-1">
-              <span>SKU: ${item.SKU}</span>
-              <span class="text-emerald-400">● Ready / Custom Order</span>
-            </div>
-            <h4 onclick="open360Modal('${item.SKU}')" class="font-cinzel text-lg font-bold text-white group-hover:text-amber-300 transition cursor-pointer">
-              ${item.ItemName}
-            </h4>
-          </div>
-        </div>
-
-        <!-- Card Footer: Price + 360° Button + Order Button -->
-        <div class="p-5 pt-3 mt-2 border-t border-white/10 flex items-center justify-between gap-2">
-          <div>
-            <span class="text-[10px] uppercase tracking-wider text-slate-400 block">Approx Showcase Price</span>
-            <span class="text-xl font-bold text-amber-300">₹${Number(item.SellPriceINR).toLocaleString('en-IN')}</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <button onclick="open360Modal('${item.SKU}')"
-                    class="px-3 py-2 rounded-xl bg-white/10 border border-amber-500/30 text-amber-200 text-xs font-semibold hover:bg-amber-500/20 transition">
-              360° View
-            </button>
-            <a href="#custom-order-section" onclick="prefillCustomOrder('${item.Category}', '${item.ItemName.replace(/'/g, "\\'")}', ${item.WeightGrams})"
-               class="px-3.5 py-2 rounded-xl bg-amber-500 text-black text-xs font-bold hover:bg-amber-400 transition">
-              Order
-            </a>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-function prefillCustomOrder(category, itemName, weight) {
-  document.getElementById('pub-order-category').value = category;
-  document.getElementById('pub-order-weight').value = weight;
-  document.getElementById('pub-order-details').value = `Interested in ${itemName} (${weight}g). Inspected in 360° HD view—please confirm making charges and availability.`;
-}
-
-async function submitPublicCustomOrder(e) {
-  e.preventDefault();
-  const msgEl = document.getElementById('pub-order-msg');
-  msgEl.textContent = 'Saving order to Google Sheet...';
-
-  const newOrder = {
-    OrderID: 'ORD-' + Date.now().toString().slice(-6),
-    DateCreated: new Date().toISOString().split('T')[0],
-    CustomerName: document.getElementById('pub-order-name').value,
-    CustomerPhone: document.getElementById('pub-order-phone').value,
-    Category: document.getElementById('pub-order-category').value,
-    EstWeightGrams: Number(document.getElementById('pub-order-weight').value) || 0,
-    DeliveryDate: document.getElementById('pub-order-date').value || 'Flexible',
-    DesignDetails: document.getElementById('pub-order-details').value,
-    AdvancePaid: 0,
-    KarigarName: 'Unassigned',
-    Status: 'Pending'
-  };
-
-  state.customOrders.unshift(newOrder);
-
-  if (GOOGLE_SCRIPT_URL) {
-    try {
-      const res = await callGoogleScriptPOST({
-        action: 'publicCustomOrder',
-        customerName: newOrder.CustomerName,
-        customerPhone: newOrder.CustomerPhone,
-        category: newOrder.Category,
-        estWeightGrams: newOrder.EstWeightGrams,
-        deliveryDate: newOrder.DeliveryDate,
-        designDetails: newOrder.DesignDetails
-      });
-      if (res && res.orderId) newOrder.OrderID = res.orderId;
-    } catch (err) {
-      console.warn('Saved locally:', err);
-    }
-  }
-
-  msgEl.textContent = `✓ Order ${newOrder.OrderID} saved to Shop Google Sheet!`;
-  e.target.reset();
-  if (state.isAuthenticated) renderAdminAll();
-}
-
-/* ==========================================================================
-   6. SHOPKEEPER AUTHENTICATION & VIEW SWITCHING
-   ========================================================================== */
-function handleAuthButtonClick() {
-  if (state.isAuthenticated) {
-    switchView('admin');
-  } else {
-    document.getElementById('login-api-url').value = GOOGLE_SCRIPT_URL;
-    document.getElementById('login-modal').classList.remove('hidden');
-    document.getElementById('login-modal').classList.add('flex');
-  }
-}
-
-function closeLoginModal() {
-  document.getElementById('login-modal').classList.add('hidden');
-  document.getElementById('login-modal').classList.remove('flex');
-}
-
-async function handleAdminLogin(e) {
-  e.preventDefault();
-  const userId = document.getElementById('login-userid').value.trim();
-  const passcode = document.getElementById('login-passcode').value.trim();
-  const apiUrlInput = document.getElementById('login-api-url').value.trim();
-  const errEl = document.getElementById('login-error');
-  const btn = document.getElementById('btn-login-submit');
-
-  errEl.classList.add('hidden');
-  btn.textContent = 'Verifying with Google Sheet...';
-
-  if (apiUrlInput) {
-    GOOGLE_SCRIPT_URL = apiUrlInput;
-    localStorage.setItem('BIHAR_JEWELRY_API_URL', GOOGLE_SCRIPT_URL);
-  }
-
-  if (GOOGLE_SCRIPT_URL) {
-    try {
-      const res = await callGoogleScriptPOST({
-        action: 'adminSync',
-        userId,
-        passcode
-      });
-      if (res.status === 'unauthorized') {
-        errEl.textContent = 'Invalid User ID or Passcode in RatesAndConfig sheet.';
-        errEl.classList.remove('hidden');
-        btn.textContent = 'Unlock Shop ERP & 30-Day Dashboard';
-        return;
-      }
-      if (res.status === 'success') {
-        state.rates = res.rates || state.rates;
-        state.inventory = res.inventory || [];
-        state.transactions = res.transactions || [];
-        state.customOrders = res.customOrders || [];
-        updateSyncBadge('✓ Live Google Sheet Synced', true);
-      }
-    } catch (err) {
-      console.warn('Cloud sync unreachable, falling back to local verification:', err);
-      if (userId !== 'admin' || passcode !== 'bihar123') {
-        errEl.textContent = 'Could not reach Google Sheet & local credentials did not match.';
-        errEl.classList.remove('hidden');
-        btn.textContent = 'Unlock Shop ERP & 30-Day Dashboard';
-        return;
-      }
-    }
-  }
-
-  state.isAuthenticated = true;
-  state.userId = userId;
-  state.passcode = passcode;
-  document.getElementById('auth-btn-label').textContent = 'Open Shop ERP Dashboard';
-  btn.textContent = 'Unlock Shop ERP & 30-Day Dashboard';
-  closeLoginModal();
-  switchView('admin');
-  renderAdminAll();
-}
-
-function logoutAdmin() {
-  state.isAuthenticated = false;
-  state.userId = '';
-  state.passcode = '';
-  document.getElementById('auth-btn-label').textContent = 'Shopkeeper Login (Bahi-Khata)';
-  switchView('public');
-}
-
-function switchView(view) {
-  const pub = document.getElementById('public-view');
-  const adm = document.getElementById('admin-view');
-  const hud = document.getElementById('scroll-hud');
-
-  if (view === 'admin' && state.isAuthenticated) {
-    pub.classList.add('hidden');
-    adm.classList.remove('hidden');
-    if (hud) hud.classList.add('!hidden');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    renderAdminAll();
-  } else {
-    adm.classList.add('hidden');
-    pub.classList.remove('hidden');
-    if (hud) hud.classList.remove('!hidden');
-  }
-}
-
-function switchAdminTab(tabName) {
-  document.querySelectorAll('.admin-tab-panel').forEach(p => p.classList.add('hidden'));
-  document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
-
-  document.getElementById(`admin-tab-${tabName}`).classList.remove('hidden');
-  document.getElementById(`tab-btn-${tabName}`).classList.add('active');
-
-  if (tabName === 'dashboard30') {
-    render30DayCharts();
-  }
-}
-
-/* ==========================================================================
-   7. ROZNAMCHA CALCULATOR, TODAY'S SELL/BUY & 30-DAY ANALYTICS
-   ========================================================================== */
-function autoFillRate() {
-  const metal = document.getElementById('tx-metal').value;
-  const rateInput = document.getElementById('tx-rate');
-  if (metal === 'Silver') rateInput.value = state.rates.silverPerGram;
-  else if (metal === 'Gold 22K') rateInput.value = state.rates.gold22kPerGram;
-  else rateInput.value = 0;
-  recalcParchi();
-}
-
-function recalcParchi() {
-  const wt = Number(document.getElementById('tx-weight').value) || 0;
-  const rate = Number(document.getElementById('tx-rate').value) || 0;
-  const making = Number(document.getElementById('tx-making').value) || 0;
-  const deduct = Number(document.getElementById('tx-old-deduct').value) || 0;
-
-  if (rate > 0) {
-    const total = Math.max(0, Math.round(wt * rate + making - deduct));
-    document.getElementById('tx-total').value = total;
-    document.getElementById('tx-paid').value = total;
-    recalcBalance();
-  }
-}
-
-function recalcBalance() {
-  const total = Number(document.getElementById('tx-total').value) || 0;
-  const paid = Number(document.getElementById('tx-paid').value) || 0;
-  document.getElementById('tx-due').value = Math.max(0, total - paid);
-}
-
-async function handleSaveTransaction(e) {
-  e.preventDefault();
-  const totalBill = Number(document.getElementById('tx-total').value) || 0;
-  const paid = Number(document.getElementById('tx-paid').value) || 0;
-
-  const newTx = {
-    TxID: 'TX-' + Date.now().toString().slice(-6),
-    Date: document.getElementById('tx-date').value,
-    Type: document.getElementById('tx-type').value,
-    CustomerName: document.getElementById('tx-customer').value,
-    CustomerPhone: document.getElementById('tx-phone').value,
-    Category: document.getElementById('tx-category').value,
-    MetalType: document.getElementById('tx-metal').value,
-    ItemDescription: document.getElementById('tx-desc').value,
-    WeightGrams: Number(document.getElementById('tx-weight').value) || 0,
-    RatePerGram: Number(document.getElementById('tx-rate').value) || 0,
-    MakingCharges: Number(document.getElementById('tx-making').value) || 0,
-    OldMetalDeduction: Number(document.getElementById('tx-old-deduct').value) || 0,
-    TotalBillAmount: totalBill,
-    AmountPaid: paid,
-    BalanceDue: Math.max(0, totalBill - paid),
-    PaymentMode: document.getElementById('tx-mode').value,
-    Notes: document.getElementById('tx-notes').value
-  };
-
-  state.transactions.unshift(newTx);
-  renderAdminAll();
-
-  if (GOOGLE_SCRIPT_URL) {
-    try {
-      await callGoogleScriptPOST({
-        action: 'addTransaction',
-        userId: state.userId,
-        passcode: state.passcode,
-        date: newTx.Date,
-        type: newTx.Type,
-        customerName: newTx.CustomerName,
-        customerPhone: newTx.CustomerPhone,
-        category: newTx.Category,
-        metalType: newTx.MetalType,
-        itemDescription: newTx.ItemDescription,
-        weightGrams: newTx.WeightGrams,
-        ratePerGram: newTx.RatePerGram,
-        makingCharges: newTx.MakingCharges,
-        oldMetalDeduction: newTx.OldMetalDeduction,
-        totalBillAmount: newTx.TotalBillAmount,
-        amountPaid: newTx.AmountPaid,
-        paymentMode: newTx.PaymentMode,
-        notes: newTx.Notes
-      });
-      updateSyncBadge('✓ Saved to Google Sheet', true);
-    } catch (err) {
-      console.warn('Saved locally:', err);
-    }
-  }
-
-  e.target.reset();
-  document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
-  autoFillRate();
-}
-
-function renderAdminAll() {
-  updateTickerUI();
-  computeAndRenderKPIs();
-  renderTransactionsTable('ALL');
-  renderInventoryTable();
-  renderOrdersTable();
-  renderUdhaarTable();
-}
-
-function computeAndRenderKPIs() {
-  const todayStr = new Date().toISOString().split('T')[0];
-  const cutoff30 = new Date();
-  cutoff30.setDate(cutoff30.getDate() - 30);
-
-  let todaySell = 0, todayBuy = 0, todaySellCount = 0, todaySilverGrams = 0;
-  let sell30d = 0, buy30d = 0, totalUdhaar = 0, udhaarCustomers = 0;
-
-  state.transactions.forEach(tx => {
-    const bill = Number(tx.TotalBillAmount) || 0;
-    const due = Number(tx.BalanceDue) || 0;
-    const wt = Number(tx.WeightGrams) || 0;
-    const txDate = new Date(tx.Date);
-
-    if (String(tx.Date).slice(0, 10) === todayStr) {
-      if (tx.Type === 'SELL') {
-        todaySell += bill;
-        todaySellCount++;
-        if (tx.MetalType === 'Silver') todaySilverGrams += wt;
-      } else {
-        todayBuy += bill;
-      }
-    }
-
-    if (txDate >= cutoff30) {
-      if (tx.Type === 'SELL') sell30d += bill;
-      else buy30d += bill;
+/* =================================================================
