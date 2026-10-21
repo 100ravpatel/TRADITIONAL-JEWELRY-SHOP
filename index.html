@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shree Magadh Alankar Mandir | Traditional Bihar Jewelry & Shop ERP</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Three.js (WebGL 3D Engine) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- Chart.js (30-Day Shop Analytics) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="bg-[#09080d] text-amber-50 antialiased selection:bg-amber-500 selection:text-black overflow-x-hidden">
+
+  <!-- ===================================================================== -->
+  <!-- CENTER-STAGE FIXED 3D WEBGL CANVAS (Scroll-Synced Metallic Object)    -->
+  <!-- ===================================================================== -->
+  <canvas id="jewelry-3d-canvas"></canvas>
+
+  <!-- Scroll Progress HUD Indicator -->
+  <div id="scroll-hud" class="fixed right-5 top-1/2 -translate-y-1/2 z-30 hidden md:flex flex-col items-end gap-2 pointer-events-none">
+    <span id="hud-stage-label" class="text-[11px] uppercase tracking-[0.25em] text-amber-400/90 font-semibold bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-amber-500/30">
+      Stage 01 · Intact Filigree
+    </span>
+    <div class="w-1.5 h-44 bg-white/10 rounded-full overflow-hidden p-0.5">
+      <div id="hud-progress-bar" class="w-full bg-gradient-to-b from-amber-300 via-yellow-500 to-cyan-300 rounded-full transition-all duration-150" style="height: 5%;"></div>
+    </div>
+    <span id="hud-scroll-pct" class="text-xs font-mono text-amber-200/70">0%</span>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- TOP NAVIGATION BAR & LIVE BIHAR BULLION TICKER                        -->
+  <!-- ===================================================================== -->
+  <header class="fixed top-0 left-0 right-0 z-40 bg-[#09080d]/80 backdrop-blur-xl border-b border-amber-500/20">
+    <!-- Live Rate Ribbon -->
+    <div class="bg-gradient-to-r from-amber-950/80 via-yellow-900/40 to-amber-950/80 border-b border-amber-500/20 px-4 py-1.5 text-xs">
+      <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-4">
+          <span class="inline-flex items-center gap-1.5 text-amber-300 font-medium">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Live Shop Bhav:
+          </span>
+          <span class="text-slate-200">Chandi (Silver): <strong id="ticker-silver" class="text-cyan-300">₹98/g</strong> (₹98,000/kg)</span>
+          <span class="hidden sm:inline text-amber-300/40">|</span>
+          <span class="text-slate-200">22K Gold: <strong id="ticker-gold" class="text-amber-400">₹7,450/g</strong></span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span id="sync-badge" class="text-[11px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/30">
+            Demo / Local Mode Ready
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Navbar -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <a href="#" onclick="switchView('public')" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-700 flex items-center justify-center text-black font-bold text-lg shadow-lg shadow-amber-500/20">
+          म
+        </div>
+        <div>
+          <h1 id="nav-shop-title" class="font-cinzel text-base sm:text-lg font-bold tracking-wider text-amber-100 group-hover:text-amber-400 transition">
+            Shree Magadh Alankar
+          </h1>
+          <p class="text-[10px] uppercase tracking-[0.2em] text-amber-400/70">
+            Payal · City Gold · Kids Bala · Pure Chandi
+          </p>
+        </div>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-6 text-sm text-amber-100/80">
+        <a href="#stage-hero" onclick="switchView('public')" class="hover:text-amber-400 transition">3D Craft</a>
+        <a href="#catalog-section" onclick="switchView('public')" class="hover:text-amber-400 transition">Collections</a>
+        <a href="#custom-order-section" onclick="switchView('public')" class="hover:text-amber-400 transition">Custom Order</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <button id="btn-open-login" onclick="handleAuthButtonClick()" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-gradient-to-r from-amber-500 to-yellow-600 text-black hover:from-amber-400 hover:to-yellow-500 transition shadow-lg shadow-amber-500/20 flex items-center gap-2">
+          <span id="auth-btn-label">Shopkeeper Login (Bahi-Khata)</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 1: PUBLIC SCROLL-SYNCED 3D SHOWCASE & CATALOG                    -->
+  <!-- ===================================================================== -->
+  <main id="public-view" class="relative z-10 pt-24">
+
+    <!-- SCROLL STAGE 1: HERO (0% - 25% Scroll) -->
+    <section id="stage-hero" class="min-h-[100vh] max-w-7xl mx-auto px-4 sm:px-6 flex flex-col justify-between py-14 pointer-events-none">
+      <div class="max-w-xl pointer-events-auto bg-black/45 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-amber-500/20 shadow-2xl">
+        <span class="inline-block text-xs uppercase tracking-[0.25em] text-amber-400 font-semibold mb-3">
+          Authentic Bihari Karigari · Scroll to Inspect
+        </span>
+        <h2 class="font-cinzel text-3xl sm:text-5xl font-extrabold leading-tight text-white mb-4">
+          Where Pure <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-200">Gold & Chandi</span> Come Alive
+        </h2>
+        <p class="text-sm sm:text-base text-slate-300 leading-relaxed mb-6">
+          Scroll down to watch our center-stage royal ornament physically disassemble into its <strong>Bala core, Jhumka filigree rings, and 16 Chandi Payal Ghungroo bells</strong>, morphing and re-illuminating with your scrollbar.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <a href="#catalog-section" class="px-5 py-2.5 rounded-xl bg-amber-500 text-black font-semibold text-sm hover:bg-amber-400 transition">
+            Explore Collection
+          </a>
+          <a href="#custom-order-section" class="px-5 py-2.5 rounded-xl bg-white/10 text-amber-200 border border-amber-500/30 font-semibold text-sm hover:bg-white/15 transition">
+            Book Custom Karigar Order
+          </a>
+        </div>
+      </div>
+
+      <div class="self-end max-w-sm pointer-events-auto bg-black/50 backdrop-blur-md p-5 rounded-2xl border border-amber-500/20">
+        <p class="text-xs uppercase tracking-widest text-amber-400 mb-1">Interactive 3D Inspection</p>
+        <p class="text-xs text-slate-300">
+          Move your mouse or touch-drag to tilt the studio camera while scrolling through the 4 disassembly stages.
+        </p>
+      </div>
+    </section>
+
+    <!-- SCROLL STAGE 2: PHYSICAL DISASSEMBLY (25% - 55% Scroll) -->
+    <section class="min-h-[95vh] max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-end py-16 pointer-events-none">
+      <div class="max-w-lg pointer-events-auto bg-black/55 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-cyan-400/30 shadow-2xl">
+        <span class="text-xs uppercase tracking-[0.25em] text-cyan-300 font-semibold">
+          Stage 02 · Exploded Payal & Bala Architecture
+        </span>
+        <h3 class="font-cinzel text-2xl sm:text-4xl font-bold text-white mt-2 mb-4">
+          16 Orbital Chandi Ghungroos & Pure Bala Core
+        </h3>
+        <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-4">
+          Notice how the 16 sterling silver <strong>Payal Ghungroo</strong> spheres detach radially from the central <strong>Kids Bala / Kada</strong> ring. Every joint, clasp, and rawa bead in our shop is soldered for lifelong durability.
+        </p>
+        <div class="grid grid-cols-2 gap-3 text-xs">
+          <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+            <span class="text-cyan-300 font-bold block text-sm">Dulhan & Daily Payal</span>
+            Heavy Bichhiya, Jodhpuri & Magadhi Chandi Payal designs.
+          </div>
+          <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+            <span class="text-amber-300 font-bold block text-sm">Kids Chandi Bala</span>
+            Smooth hypoallergenic edges safe for newborns & children.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCROLL STAGE 3: MORPH & RE-ILLUMINATION (55% - 80% Scroll) -->
+    <section class="min-h-[95vh] max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-start py-16 pointer-events-none">
+      <div class="max-w-lg pointer-events-auto bg-black/55 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-amber-400/30 shadow-2xl">
+        <span class="text-xs uppercase tracking-[0.25em] text-amber-400 font-semibold">
+          Stage 03 · Morphing Jhumka & City Gold Luster
+        </span>
+        <h3 class="font-cinzel text-2xl sm:text-4xl font-bold text-white mt-2 mb-4">
+          Earrings, Jhumkas & High-Finish City Gold
+        </h3>
+        <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-4">
+          As the studio illumination shifts across the metallic rings, see the mirror polish we bring to both our <strong>Hallmarked Silver</strong> and our <strong>Micro-Plated City Gold Bridal Sets</strong>—giving royal wedding look at pocket-friendly prices.
+        </p>
+        <ul class="space-y-2 text-xs text-slate-200">
+          <li class="flex items-center gap-2"><span class="text-amber-400">✦</span> Suryamukhi & Kaan-Chain Jhumka Earrings</li>
+          <li class="flex items-center gap-2"><span class="text-amber-400">✦</span> Tarnish-Resistant City Gold Rani Haar, Mangalsutra & Kangans</li>
+          <li class="flex items-center gap-2"><span class="text-amber-400">✦</span> 999 Silver Coins, Murti, Pooja Bartan & Gift Items</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SCROLL STAGE 4: PUBLIC COLLECTION CATALOG -->
+    <section id="catalog-section" class="py-20 bg-gradient-to-b from-black/70 via-[#09080d]/95 to-[#09080d] backdrop-blur-lg border-t border-amber-500/20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+          <div>
+            <span class="text-xs uppercase tracking-[0.25em] text-amber-400 font-semibold">Live From Our Shop Showcase</span>
+            <h3 class="font-cinzel text-3xl sm:text-4xl font-bold text-white mt-1">Our Signature Bihari Collection</h3>
+          </div>
+          <!-- Category Filter Pills -->
+          <div id="catalog-filters" class="flex flex-wrap gap-2">
+            <button onclick="filterCatalog('ALL')" data-cat="ALL" class="cat-pill active px-4 py-1.5 rounded-full text-xs font-semibold border border-amber-500/40 bg-amber-500 text-black">All Items</button>
+            <button onclick="filterCatalog('Payal')" data-cat="Payal" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold border border-amber-500/30 bg-white/5 text-amber-100 hover:bg-white/10">Payal (Chandi)</button>
+            <button onclick="filterCatalog('Earring')" data-cat="Earring" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold border border-amber-500/30 bg-white/5 text-amber-100 hover:bg-white/10">Earrings</button>
+            <button onclick="filterCatalog('City Gold')" data-cat="City Gold" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold border border-amber-500/30 bg-white/5 text-amber-100 hover:bg-white/10">City Gold</button>
+            <button onclick="filterCatalog('Kids Bala')" data-cat="Kids Bala" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold border border-amber-500/30 bg-white/5 text-amber-100 hover:bg-white/10">Kids Bala</button>
+            <button onclick="filterCatalog('Silver Item')" data-cat="Silver Item" class="cat-pill px-4 py-1.5 rounded-full text-xs font-semibold border border-amber-500/30 bg-white/5 text-amber-100 hover:bg-white/10">Silver Items</button>
+          </div>
+        </div>
+
+        <!-- Catalog Cards Grid -->
+        <div id="public-catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Populated dynamically via app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- CUSTOM ORDER & KARIGAR BOOKING SECTION -->
+    <section id="custom-order-section" class="py-20 bg-[#0c0a12]/95 border-t border-amber-500/20">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6">
+        <div class="bg-gradient-to-br from-amber-950/30 via-black/80 to-slate-900/60 p-6 sm:p-10 rounded-3xl border border-amber-500/30 shadow-2xl">
+          <div class="text-center max-w-xl mx-auto mb-8">
+            <span class="text-xs uppercase tracking-[0.25em] text-amber-400 font-semibold">Custom Karigar Desk</span>
+            <h3 class="font-cinzel text-2xl sm:text-3xl font-bold text-white mt-1">Order Custom Payal, Bala or Bridal Design</h3>
+            <p class="text-xs sm:text-sm text-slate-300 mt-2">
+              Want a specific weight Dulhan Payal, custom name engraving on a Kids Chandi Bala, or old silver/gold exchange? Submit your order directly to our shop register.
+            </p>
+          </div>
+
+          <form id="public-order-form" onsubmit="submitPublicCustomOrder(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs text-amber-200/80 mb-1">Your Full Name *</label>
+              <input type="text" id="pub-order-name" required placeholder="e.g. Rajesh Kumar" class="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-amber-500/30 text-sm text-white focus:outline-none focus:border-amber-400" />
+            </div>
+            <div>
+              <label class="block text-xs text-amber-200/80 mb-1">Mobile / WhatsApp Number *</label>
+              <input type="tel" id="pub-order-phone" required placeholder="e.g. 9876543210" class="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-amber-500/30 text-sm text-white focus:outline-none focus:border-amber-400" />
+            </div>
+            <div>
+              <label class="block text-xs text-amber-200/80 mb-1">Jewelry Category *</label>
+              <select id="pub-order-category" class="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-amber-500/30 text-sm text-white focus:outline-none focus:border-amber-400">
+                <option value="Payal">Heavy / Custom Chandi Payal</option>
+                <option value="Kids Bala">Kids Chandi / Gold Bala Pair</option>
+                <option value="Earring">Custom Jhumka / Earring</option>
+                <option value="City Gold">Bridal City Gold Set</option>
+                <option value="Silver Item">Pure Silver Gift / Bartan / Murti</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs text-amber-200/80 mb-1">Approx Target Weight (Grams) & Delivery Date</label>
+              <div class="grid grid-cols-2 gap-2">
+                <input type="number" step="0.1" id="pub-order-weight" placeholder="Weight (g) e.g. 150" class="w-full px-3 py-2.5 rounded-xl bg-black/60 border border-amber-500/30 text-sm text-white focus:outline-none focus:border-amber-400" />
+                <input type="date" id="pub-order-date" class="w-full px-3 py-2.5 rounded-xl bg-black/60 border border-amber-500/30 text-sm text-white focus:outline-none focus:border-amber-400" />
+              </div>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-xs text-amber-200/80 mb-1">Design Details / Old Silver Exchange Note *</label>
+              <textarea id="pub-order-details" rows="3" required placeholder="Describe design, size, ghungroo count, or mention if bringing old silver to exchange..." class="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-amber-500/30 text-sm text-white focus:outline-none focus:border-amber-400"></textarea>
+            </div>
+            <div class="sm:col-span-2 flex items-center justify-between pt-2">
+              <span id="pub-order-msg" class="text-xs text-emerald-400"></span>
+              <button type="submit" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 text-black font-bold text-sm hover:from-amber-400 hover:to-yellow-500 transition shadow-lg">
+                Send Custom Order to Shop Register
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <footer class="py-8 bg-black border-t border-amber-500/20 text-center text-xs text-slate-400">
+      <p>© 2026 Shree Magadh Alankar Mandir · Authentic Bihar Payal, Earring, City Gold, Kids Bala & Silver ERP</p>
+    </footer>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 2: SHOPKEEPER ADMIN ERP (DIGITAL BAHI-KHATA & 30-DAY DASHBOARD)  -->
+  <!-- ===================================================================== -->
+  <section id="admin-view" class="hidden relative z-20 pt-28 pb-20 min-h-screen bg-[#09080d]/95 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+
+      <!-- Admin Top Bar -->
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-amber-500/20">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              Munim Ji Digital Bahi-Khata Active
+            </span>
+            <button onclick="switchView('public')" class="text-xs text-amber-400 underline hover:text-amber-300">
+              ← View Public 3D Website
+            </button>
+          </div>
+          <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white mt-1">
+            Shop Inventory, Daily Bikri/Kharid & 30-Day Hisab
+          </h2>
+        </div>
+
+        <!-- Quick Live Rate Updater + Google Sheet Connection Config -->
+        <div class="flex flex-wrap items-center gap-2 bg-white/5 p-2.5 rounded-2xl border border-amber-500/20">
+          <div class="flex items-center gap-1.5 text-xs">
+            <span class="text-slate-400">Chandi ₹/g:</span>
+            <input type="number" id="admin-rate-silver" class="w-16 px-2 py-1 rounded bg-black border border-amber-500/30 text-cyan-300 font-bold text-xs" value="98" />
+          </div>
+          <div class="flex items-center gap-1.5 text-xs">
+            <span class="text-slate-400">22K Gold ₹/g:</span>
+            <input type="number" id="admin-rate-gold" class="w-20 px-2 py-1 rounded bg-black border border-amber-500/30 text-amber-300 font-bold text-xs" value="7450" />
+          </div>
+          <button onclick="saveLiveRates()" class="px-3 py-1 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-semibold hover:bg-amber-500 hover:text-black transition">
+            Update Bhav
+          </button>
+          <button onclick="logoutAdmin()" class="px-3 py-1 rounded-lg bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs font-semibold hover:bg-rose-500 hover:text-white transition">
+            Logout
+          </button>
+        </div>
+      </div>
+
+      <!-- TODAY'S LIVE SUMMARY + 30-DAY KPI CARDS -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-6">
+        <!-- Card 1: Today's Total Sell (Aaj Ki Bikri) -->
+        <div class="p-5 rounded-2xl bg-gradient-to-br from-emerald-950/50 to-black border border-emerald-500/30">
+          <span class="text-xs uppercase tracking-wider text-emerald-400 font-semibold">Today's Total Sell (Aaj Ki Bikri)</span>
+          <p id="kpi-today-sell" class="text-2xl sm:text-3xl font-bold text-white mt-1">₹0</p>
+          <p id="kpi-today-sell-sub" class="text-xs text-slate-400 mt-1">0 bills today · 0g Silver sold</p>
+        </div>
+
+        <!-- Card 2: Today's Total Buy (Aaj Ki Kharid / Old Exchange) -->
+        <div class="p-5 rounded-2xl bg-gradient-to-br from-amber-950/50 to-black border border-amber-500/30">
+          <span class="text-xs uppercase tracking-wider text-amber-400 font-semibold">Today's Total Buy (Kharid / Old Metal)</span>
+          <p id="kpi-today-buy" class="text-2xl sm:text-3xl font-bold text-white mt-1">₹0</p>
+          <p id="kpi-today-buy-sub" class="text-xs text-slate-400 mt-1">Stock purchase & old silver/gold bought</p>
+        </div>
+
+        <!-- Card 3: Last 30 Days Net Sell vs Buy -->
+        <div class="p-5 rounded-2xl bg-gradient-to-br from-cyan-950/50 to-black border border-cyan-500/30">
+          <span class="text-xs uppercase tracking-wider text-cyan-300 font-semibold">Last 30 Days Total Bikri</span>
+          <p id="kpi-30d-sell" class="text-2xl sm:text-3xl font-bold text-white mt-1">₹0</p>
+          <p id="kpi-30d-buy-sub" class="text-xs text-slate-400 mt-1">30d Buy: ₹0 | Net Flow: ₹0</p>
+        </div>
+
+        <!-- Card 4: Market Udhaar (Customer Pending Dues) -->
+        <div class="p-5 rounded-2xl bg-gradient-to-br from-rose-950/50 to-black border border-rose-500/30">
+          <span class="text-xs uppercase tracking-wider text-rose-400 font-semibold">Total Market Udhaar (Baki Khata)</span>
+          <p id="kpi-total-udhaar" class="text-2xl sm:text-3xl font-bold text-rose-200 mt-1">₹0</p>
+          <p id="kpi-udhaar-sub" class="text-xs text-slate-400 mt-1">Pending from customers</p>
+        </div>
+      </div>
+
+      <!-- ADMIN MODULE TABS (Everything a Pen-and-Paper Shop Tracks) -->
+      <div class="flex flex-wrap gap-2 border-b border-amber-500/20 pb-3 mb-6">
+        <button onclick="switchAdminTab('roznamcha')" id="tab-btn-roznamcha" class="admin-tab-btn active px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-amber-500 text-black">
+          1. Daily Roznamcha (Sell / Buy Entry)
+        </button>
+        <button onclick="switchAdminTab('dashboard30')" id="tab-btn-dashboard30" class="admin-tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white/5 text-amber-100 hover:bg-white/10">
+          2. 30-Day Analytics Dashboard
+        </button>
+        <button onclick="switchAdminTab('inventory')" id="tab-btn-inventory" class="admin-tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white/5 text-amber-100 hover:bg-white/10">
+          3. Stock Register (Inventory)
+        </button>
+        <button onclick="switchAdminTab('orders')" id="tab-btn-orders" class="admin-tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white/5 text-amber-100 hover:bg-white/10">
+          4. Karigar & Custom Orders
+        </button>
+        <button onclick="switchAdminTab('udhaar')" id="tab-btn-udhaar" class="admin-tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white/5 text-amber-100 hover:bg-white/10">
+          5. Udhaar / Baki Khata Book
+        </button>
+      </div>
+
+      <!-- ================================================================= -->
+      <!-- ADMIN TAB 1: DAILY ROZNAMCHA (PEN & PAPER SELL / BUY LEDGER)      -->
+      <!-- ================================================================= -->
+      <div id="admin-tab-roznamcha" class="admin-tab-panel grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Left: New Sell / Buy Entry Form -->
+        <div class="lg:col-span-5 bg-white/5 p-6 rounded-3xl border border-amber-500/20">
+          <h3 class="font-cinzel text-lg font-bold text-amber-300 mb-1">New Parchi / Roznamcha Entry</h3>
+          <p class="text-xs text-slate-400 mb-4">Record customer sale (Bikri) or old silver/gold/wholesale purchase (Kharid).</p>
+
+          <form id="roznamcha-form" onsubmit="handleSaveTransaction(event)" class="space-y-3 text-xs">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-slate-300 mb-1">Entry Type *</label>
+                <select id="tx-type" onchange="recalcParchi()" class="w-full px-3 py-2 rounded-xl bg-black border border-amber-500/30 text-white font-semibold">
+                  <option value="SELL">🟢 SELL (Customer Bikri)</option>
+                  <option value="BUY">🟠 BUY (Old Metal / Stock Kharid)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-slate-300 mb-1">Date *</label>
+                <input type="date" id="tx-date" required class="w-full px-3 py-2 rounded-xl bg-black border border-amber-500/30 text-white" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-slate-300 mb-1">Customer / Party Name *</label>
+                <input type="text" id="tx-customer" required placeholder="e.g. Sunita Devi" class="w-full px-3 py-2 rounded-xl bg-black border border-amber-500/30 text-white" />
+              </div>
+              <div>
+                <label class="block text-slate-300 mb-1">Phone Number</label>
+                <input type="tel" id="tx-phone" placeholder="e.g. 99340xxxxx" class="w-full px-3 py-2 rounded-xl bg-black border border-amber-500/30 text-white" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-slate-300 mb-1">Category *</label>
+                <select id="tx-category" class="w-full px-3 py-2 rounded-xl bg-black border border-amber-500/30 text-white">
+                  <option value="Payal">Payal (Chandi)</option>
+                  <option value="Earring">Earring / Jhumka</option>
+                  <option value="City Gold">City Gold Jewelry</option>
+                  <option value="Kids Bala">Kids Bala / Kada</option>
+                  <option value="Silver Item">Silver Item (Bichhiya/Coin/Murti)</option>
+                  <option value="Old Metal Exchange">Old Chandi/Sona Kharid</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-slate-300 mb-1">Metal Type *</label>
+                <select id="tx-metal" onchange="autoFillRate()" class="w-full px-3 py-2 rounded-xl bg-black border border-amber-500/30 text-white">
+                  <option value="Silver">Silver (Chandi)</option>
+                  <option value="City Gold">City Gold (Fixed Price)</option>
+                  <option value="Gold 22K">Gold 22K</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-slate-300 mb-1">Item Description / Link SKU</label>
+              <input type="text" id="tx-desc" required placeholder="e.g. Heavy Dulhan Payal 1Pair + 4 Bichhiya" class="w-full px-3 py-2 rounded-xl bg-black border border-amber-500/30 text-white" />
+            </div>
+
+            <!-- Weight + Rate + Majduri + Old Metal Katoti Calculator -->
+            <div class="p-3 rounded-2xl bg-black/60 border border-amber-500/20 space-y-2">
+              <span class="text-[11px] uppercase tracking-wider text-amber-400 font-semibold block">Pucca Hisab Calculator (Grams + Majduri - Old Metal)</span>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="text-slate-400">Net Weight (Grams)</label>
+                  <input type="number" step="0.01" id="tx-weight" oninput="recalcParchi()" value="50" class="w-full px-2.5 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white" />
+                </div>
+                <div>
+                  <label class="text-slate-400">Rate per Gram (₹)</label>
+                  <input type="number" step="0.1" id="tx-rate" oninput="recalcParchi()" value="98" class="w-full px-2.5 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white" />
+                </div>
+                <div>
+                  <label class="text-slate-400">Making / Majduri (+₹)</label>
+                  <input type="number" id="tx-making" oninput="recalcParchi()" value="450" class="w-full px-2.5 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white" />
+                </div>
+                <div>
+                  <label class="text-slate-400">Old Metal Exchange (-₹)</label>
+                  <input type="number" id="tx-old-deduct" oninput="recalcParchi()" value="0" class="w-full px-2.5 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white" />
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <label class="block text-amber-300 font-semibold mb-1">Total Bill (₹) *</label>
+                <input type="number" id="tx-total" oninput="recalcBalance()" required class="w-full px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-400 text-amber-200 font-bold text-sm" />
+              </div>
+              <div>
+                <label class="block text-emerald-300 font-semibold mb-1">Cash/UPI Paid (₹)</label>
+                <input type="number" id="tx-paid" oninput="recalcBalance()" required class="w-full px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-400 text-emerald-200 font-bold text-sm" />
+              </div>
+              <div>
+                <label class="block text-rose-300 font-semibold mb-1">Udhaar Due (₹)</label>
+                <input type="number" id="tx-due" readonly class="w-full px-3 py-2 rounded-xl bg-rose-500/10 border border-rose-500/40 text-rose-300 font-bold text-sm" value="0" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-slate-300 mb-1">Payment Mode</label>
+                <select id="tx-mode" class="w-full px-3 py-2 rounded-xl bg-black border border-amber-500/30 text-white">
+                  <option value="Cash">Cash (Galla)</option>
+                  <option value="UPI / PhonePe">UPI / PhonePe / GPay</option>
+                  <option value="Partial Udhaar">Partial Cash + Udhaar</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-slate-300 mb-1">Parchi Note</label>
+                <input type="text" id="tx-notes" placeholder="Guarantee / Karigar ref" class="w-full px-3 py-2 rounded-xl bg-black border border-amber-500/30 text-white" />
+              </div>
+            </div>
+
+            <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 text-black font-bold text-sm hover:from-amber-400 hover:to-yellow-500 transition shadow-lg">
+              Save Entry to Bahi-Khata & Google Sheet
+            </button>
+          </form>
+        </div>
+
+        <!-- Right: Daily & Recent Transactions Table -->
+        <div class="lg:col-span-7 bg-white/5 p-6 rounded-3xl border border-amber-500/20 flex flex-col justify-between">
+          <div>
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+              <div>
+                <h3 class="font-cinzel text-lg font-bold text-white">Roznamcha Register (Recent Bikri & Kharid)</h3>
+                <p class="text-xs text-slate-400">Filter by Today or view all entries synced with Google Sheets</p>
+              </div>
+              <div class="flex gap-2">
+                <button onclick="renderTransactionsTable('TODAY')" class="px-3 py-1 rounded-lg bg-amber-500/20 text-amber-300 text-xs font-semibold border border-amber-500/30">Today Only</button>
+                <button onclick="renderTransactionsTable('ALL')" class="px-3 py-1 rounded-lg bg-white/10 text-slate-200 text-xs font-semibold">All 30 Days</button>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="border-b border-white/10 text-slate-400 uppercase text-[10px]">
+                    <th class="py-2.5 px-2">Date / Type</th>
+                    <th class="py-2.5 px-2">Customer & Item</th>
+                    <th class="py-2.5 px-2">Wt (g)</th>
+                    <th class="py-2.5 px-2">Bill (₹)</th>
+                    <th class="py-2.5 px-2">Paid / Due</th>
+                  </tr>
+                </thead>
+                <tbody id="roznamcha-tbody" class="divide-y divide-white/5">
+                  <!-- Populated via app.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================= -->
+      <!-- ADMIN TAB 2: LAST 30 DAYS ANALYTICS DASHBOARD                     -->
+      <!-- ================================================================= -->
+      <div id="admin-tab-dashboard30" class="admin-tab-panel hidden space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-8 bg-white/5 p-6 rounded-3xl border border-amber-500/20">
+            <h3 class="font-cinzel text-lg font-bold text-white mb-1">Last 30 Days: Daily Sell (Bikri) vs Buy (Kharid)</h3>
+            <p class="text-xs text-slate-400 mb-4">Visual cashflow comparison across the past 30 days</p>
+            <div class="h-72">
+              <canvas id="chart-30days"></canvas>
+            </div>
+          </div>
+          <div class="lg:col-span-4 bg-white/5 p-6 rounded-3xl border border-amber-500/20">
+            <h3 class="font-cinzel text-lg font-bold text-white mb-1">Category-Wise Revenue</h3>
+            <p class="text-xs text-slate-400 mb-4">Payal vs Earring vs City Gold vs Kids Bala</p>
+            <div class="h-64 flex items-center justify-center">
+              <canvas id="chart-categories"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================= -->
+      <!-- ADMIN TAB 3: INVENTORY & STOCK REGISTER                           -->
+      <!-- ================================================================= -->
+      <div id="admin-tab-inventory" class="admin-tab-panel hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Add / Update Stock Item -->
+        <div class="lg:col-span-4 bg-white/5 p-6 rounded-3xl border border-amber-500/20">
+          <h3 class="font-cinzel text-lg font-bold text-amber-300 mb-3">Add / Update Stock Item</h3>
+          <form onsubmit="handleSaveInventory(event)" class="space-y-3 text-xs">
+            <div>
+              <label class="block text-slate-300 mb-1">SKU Code (Leave blank to auto-generate)</label>
+              <input type="text" id="inv-sku" placeholder="e.g. BIH-PYL-09" class="w-full px-3 py-2 rounded-xl bg-black border border-amber-500/30 text-white" />
+            </div>
+            <div>
+              <label class="block text-slate-300 mb-1">Item Name *</label>
+              <input type="text" id="inv-name" required placeholder="e.g. Rajwadi Chandi Payal 200g" class="w-full px-3 py-2 rounded-xl bg-black border border-amber-500/30 text-white" />
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-slate-300 mb-1">Category *</label>
+                <select id="inv-category" class="w-full px-3 py-2 rounded-xl bg-black border border-amber-500/30 text-white">
+                  <option value="Payal">Payal</option>
+                  <option value="Earring">Earring</option>
+                  <option value="City Gold">City Gold</option>
+                  <option value="Kids Bala">Kids Bala</option>
+                  <option value="Silver Item">Silver Item</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-slate-300 mb-1">Metal *</label>
+                <select id="inv-metal" class="w-full px-3 py-2 rounded-xl bg-black border border-amber-500/30 text-white">
+                  <option value="Silver">Silver (Chandi)</option>
+                  <option value="City Gold">City Gold</option>
+                  <option value="Gold 22K">Gold 22K</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-slate-300 mb-1">Weight (Grams) *</label>
+                <input type="number" step="0.1" id="inv-weight" required placeholder="50.0" class="w-full px-3 py-2 rounded-xl bg-black border border-amber-500/30 text-white" />
+              </div>
+              <div>
+                <label class="block text-slate-300 mb-1">Quantity in Stock *</label>
+                <input type="number" id="inv-qty" required placeholder="10" class="w-full px-3 py-2 rounded-xl bg-black border border-amber-500/30 text-white" />
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-slate-300 mb-1">Buying Cost (₹)</label>
+                <input type="number" id="inv-buy" required placeholder="4200" class="w-full px-3 py-2 rounded-xl bg-black border border-amber-500/30 text-white" />
+              </div>
+              <div>
+                <label class="block text-slate-300 mb-1">Selling Price (₹)</label>
+                <input type="number" id="inv-sell" required placeholder="5400" class="w-full px-3 py-2 rounded-xl bg-black border border-amber-500/30 text-white" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-slate-300 mb-1">Show on Public Website Catalog?</label>
+              <select id="inv-public" class="w-full px-3 py-2 rounded-xl bg-black border border-amber-500/30 text-white">
+                <option value="YES">YES - Show on Public Website</option>
+                <option value="NO">NO - Internal Stock Only</option>
+              </select>
+            </div>
+            <button type="submit" class="w-full py-2.5 rounded-xl bg-amber-500 text-black font-bold text-xs hover:bg-amber-400 transition">
+              Save Item to Inventory Sheet
+            </button>
+          </form>
+        </div>
+
+        <!-- Stock Table -->
+        <div class="lg:col-span-8 bg-white/5 p-6 rounded-3xl border border-amber-500/20 overflow-x-auto">
+          <h3 class="font-cinzel text-lg font-bold text-white mb-4">Live Shop Stock Register</h3>
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-white/10 text-slate-400 uppercase text-[10px]">
+                <th class="py-2 px-2">SKU</th>
+                <th class="py-2 px-2">Item & Category</th>
+                <th class="py-2 px-2">Weight</th>
+                <th class="py-2 px-2">Stock Qty</th>
+                <th class="py-2 px-2">Buy / Sell (₹)</th>
+                <th class="py-2 px-2">Public</th>
+              </tr>
+            </thead>
+            <tbody id="inventory-tbody" class="divide-y divide-white/5"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ================================================================= -->
+      <!-- ADMIN TAB 4: KARIGAR & CUSTOM ORDERS REGISTER                     -->
+      <!-- ================================================================= -->
+      <div id="admin-tab-orders" class="admin-tab-panel hidden bg-white/5 p-6 rounded-3xl border border-amber-500/20">
+        <h3 class="font-cinzel text-lg font-bold text-white mb-1">Custom Orders & Karigar Book</h3>
+        <p class="text-xs text-slate-400 mb-4">Manage customer custom orders, advance bayana, karigar assignment, and delivery status.</p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-white/10 text-slate-400 uppercase text-[10px]">
+                <th class="py-2.5 px-2">Order ID / Date</th>
+                <th class="py-2.5 px-2">Customer</th>
+                <th class="py-2.5 px-2">Category & Design Details</th>
+                <th class="py-2.5 px-2">Est. Wt / Delivery</th>
+                <th class="py-2.5 px-2">Status & Action</th>
+              </tr>
+            </thead>
+            <tbody id="orders-tbody" class="divide-y divide-white/5"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ================================================================= -->
+      <!-- ADMIN TAB 5: UDHAAR / BAKI KHATA REGISTER                         -->
+      <!-- ================================================================= -->
+      <div id="admin-tab-udhaar" class="admin-tab-panel hidden bg-white/5 p-6 rounded-3xl border border-amber-500/20">
+        <h3 class="font-cinzel text-lg font-bold text-rose-300 mb-1">Udhaar / Customer Pending Baki Khata</h3>
+        <p class="text-xs text-slate-400 mb-4">Every customer bill with pending balance is automatically tracked here until settled.</p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-white/10 text-slate-400 uppercase text-[10px]">
+                <th class="py-2.5 px-2">Tx ID / Date</th>
+                <th class="py-2.5 px-2">Customer & Phone</th>
+                <th class="py-2.5 px-2">Jewelry Item</th>
+                <th class="py-2.5 px-2">Total Bill</th>
+                <th class="py-2.5 px-2">Paid</th>
+                <th class="py-2.5 px-2">Pending Due (Baki)</th>
+                <th class="py-2.5 px-2">Settle</th>
+              </tr>
+            </thead>
+            <tbody id="udhaar-tbody" class="divide-y divide-white/5"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- LOGIN MODAL (SHOPKEEPER USER ID + PASSCODE + GOOGLE SHEET URL)        -->
+  <!-- ===================================================================== -->
+  <div id="login-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md p-4">
+    <div class="bg-[#12101b] border border-amber-500/40 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <span class="text-[10px] uppercase tracking-widest text-amber-400 font-semibold">Protected Shop Portal</span>
+          <h3 class="font-cinzel text-xl font-bold text-white">Shopkeeper Bahi-Khata Login</h3>
+        </div>
+        <button onclick="closeLoginModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
+      </div>
+
+      <form onsubmit="handleAdminLogin(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block text-slate-300 mb-1">Shopkeeper User ID *</label>
+          <input type="text" id="login-userid" required value="admin" class="w-full px-4 py-2.5 rounded-xl bg-black border border-amber-500/30 text-white focus:outline-none focus:border-amber-400" />
+        </div>
+        <div>
+          <label class="block text-slate-300 mb-1">Secret Passcode / Code *</label>
+          <input type="password" id="login-passcode" required value="bihar123" class="w-full px-4 py-2.5 rounded-xl bg-black border border-amber-500/30 text-white focus:outline-none focus:border-amber-400" />
+          <p class="text-[11px] text-slate-400 mt-1">Default demo credentials: <code class="text-amber-300">admin</code> / <code class="text-amber-300">bihar123</code></p>
+        </div>
+        <div>
+          <label class="block text-slate-300 mb-1">Google Apps Script Web App URL (Optional for Demo)</label>
+          <input type="url" id="login-api-url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-4 py-2 rounded-xl bg-black border border-amber-500/20 text-slate-200 text-[11px]" />
+          <p class="text-[10px] text-slate-400 mt-1">Leave blank to test immediately in Local Demo Mode, or paste your deployed Google Sheet Web App URL for live cloud sync.</p>
+        </div>
+
+        <p id="login-error" class="text-xs text-rose-400 hidden"></p>
+
+        <button type="submit" id="btn-login-submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 text-black font-bold text-sm hover:from-amber-400 hover:to-yellow-500 transition shadow-lg">
+          Unlock Shop ERP & 30-Day Dashboard
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main Application Script -->
+  <script src="app.js"></script>
+</body>
+</html>
