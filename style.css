@@ -1,16 +1,18 @@
 /* ==========================================================================
-   SHREE MAGADH ALANKAR - LUXURY 3D SCROLL STAGE & 360° STUDIO STYLES (style.css)
+   SHREE MAGADH ALANKAR - PROFESSIONAL SHOWROOM & ENTERPRISE ERP UI (style.css)
    ========================================================================== */
 
 body {
   font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #1c1917;
+  background-color: #faf7f2;
 }
 
-.font-cinzel {
-  font-family: 'Cinzel', serif;
+.font-serif-display {
+  font-family: 'Cormorant Garamond', Georgia, serif;
 }
 
-/* Center-Stage Fixed 3D WebGL Canvas */
+/* Center-Stage Fixed 3D WebGL Canvas - Warm Daylight Studio Backdrop */
 #jewelry-3d-canvas {
   position: fixed;
   top: 0;
@@ -19,48 +21,51 @@ body {
   height: 100vh;
   z-index: 1;
   pointer-events: auto;
-  background: radial-gradient(circle at 50% 45%, rgba(66, 45, 11, 0.28) 0%, rgba(9, 8, 13, 0.96) 72%);
+  background: radial-gradient(circle at 50% 46%, #efe5d4 0%, #faf7f2 70%);
 }
 
-/* Smooth glassmorphic filter pills */
+/* Category Filter Pills */
 .cat-pill.active {
-  background: linear-gradient(135deg, #f59e0b, #eab308);
-  color: #000;
-  border-color: #fde047;
+  background: #6B1D2F !important;
+  color: #ffffff !important;
+  border-color: #6B1D2F !important;
+  box-shadow: 0 4px 12px rgba(107, 29, 47, 0.22);
 }
 
+/* ERP Navigation Tabs */
 .admin-tab-btn.active {
-  background: linear-gradient(135deg, #f59e0b, #ca8a04);
-  color: #000;
-  box-shadow: 0 8px 20px -4px rgba(245, 158, 11, 0.45);
+  background: #6B1D2F !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(107, 29, 47, 0.2);
 }
 
-/* Product Card HD Image Hover & 360 Badge */
+/* Product Card HD Image Zoom */
 .catalog-card-img {
   transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .group:hover .catalog-card-img {
-  transform: scale(1.07);
+  transform: scale(1.06);
 }
 
-/* Thumbnail active ring inside 360 modal */
+/* Thumbnail Active State in 360 Modal */
 .thumb-360-active {
-  border-color: #f59e0b !important;
-  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.45);
+  border-color: #6B1D2F !important;
+  background-color: #faf7f2 !important;
+  box-shadow: 0 0 0 2px rgba(107, 29, 47, 0.25);
 }
 
-/* Custom Scrollbar */
+/* Refined Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #09080d;
+  background: #f4efe6;
 }
 ::-webkit-scrollbar-thumb {
-  background: #b45309;
+  background: #c5b49b;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #f59e0b;
+  background: #6B1D2F;
 }
