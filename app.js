@@ -5,7 +5,7 @@
  */
 
 // Paste your deployed Google Apps Script Web App URL here (or enter it in the Login Modal)
-let GOOGLE_SCRIPT_URL = localStorage.getItem('BIHAR_JEWELRY_API_URL') || '';
+let GOOGLE_SCRIPT_URL = localStorage.getItem('https://script.google.com/macros/s/AKfycbyX1XrZBA751KOCsmvlvGAPkJXCxo8uBeI7pPofBLAVLyd5wEXYYq5DH1ti1a0he8CL/exec') || '';
 
 // Session & Shop State
 const state = {
